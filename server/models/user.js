@@ -11,8 +11,10 @@ var User = new Schema (
     name: { type:String, required:true, index:{ unique:true } },
     password: { type:String, required:true },
     admin: { type:Boolean, required:false },
-    roles: [],
+    roles: [String],
     restaurantId: { type:String, required:true, index:{ unique:true } },
+    phone: { type: Number, required:true },
+    email: { type: String, required:true }
   }
 );
 
