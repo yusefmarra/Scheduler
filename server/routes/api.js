@@ -3,12 +3,13 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var User = mongoose.model('users');
+var Restaurant = mongoose.model('restaurants');
 require('dotenv').load();
 
 
 
 router.post('/user/add', function(req, res) {
-  if (req.body.name && req.body.password && req.body.email && req.body.restaurantId && req.body.phone) {
+  if (req.body.name && req.body.password && req.body.email && req.body.phone) {
     new User(req.body).save(function(err, user) {
       if (!err) {
         res.statusCode = 200;
@@ -87,7 +88,6 @@ router.use(function(req, res, next) {
       if (!err) {
         req.decoded = decoded;
         next();
-
       } else {
         res.statusCode = 403;
         res.json({

@@ -6,14 +6,14 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
 
   </head>
-  <body>
+  <body ng-app="scheduler">
     <div class="container">
-
-      <h1>Scheduler</h1>
-      <p>Welcome to your Scheduler</p>
-
+      <header ng-include="'templates/nav.html'"></header>
+      <div ui-view></div>
+      <footer ng-include="'templates/footer.html'"></footer>
     </div>
     <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
