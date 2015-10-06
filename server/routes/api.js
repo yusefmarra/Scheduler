@@ -132,5 +132,9 @@ router.post('/restaurant/add', function(req, res){
   }
 });
 
+router.get('/restaurants', function(req, res){
+  res.json(req.decoded);
+});
+
 
 module.exports = router;
