@@ -54,7 +54,7 @@ router.post('/user/authenticate', function(req, res) {
           if (!err) {
             if (match) {
               var token = jwt.sign(user, process.env.secret, {
-                expiresInMinutes: 1440,
+                expiresIn: 1440*60,
               });
               res.statusCode = 200;
               res.json({
