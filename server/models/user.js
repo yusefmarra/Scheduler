@@ -18,6 +18,8 @@ var User = new Schema (
   }
 );
 
+
+
 User.pre('save', function(next) {
   var user = this;
 
@@ -46,5 +48,5 @@ User.methods.comparePassword = function(inputPassword, cb) {
   });
 };
 
+
 mongoose.model('users', User);
-mongoose.connect('mongodb://localhost/scheduler');

@@ -8,8 +8,8 @@ require('dotenv').load();
 
 
 router.post('/user/add', function(req, res) {
-  if (req.body.name && req.body.password) {
-    new User({name:req.body.name, password:req.body.password}).save(function(err, user) {
+  if (req.body.name && req.body.password && req.body.email && req.body.restaurantId && req.body.phone) {
+    new User(req.body).save(function(err, user) {
       if (!err) {
         res.statusCode = 200;
         res.json({
@@ -74,6 +74,34 @@ router.post('/user/authenticate', function(req, res) {
   } else {
     res.statusCode = 400;
     res.json({message: "You must provide all fields", code: 400});
+  }
+});
+
+
+// **** EVERYTHING AFTER THIS POINT REQUIRES A TOKEN *** //
+
+router.use(function(req, res, next) {
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (token) {
+    jwt.verify(token, process.env.secret, function(err, decoded) {
+      if (!err) {
+        req.decoded = decoded;
+        next();
+
+      } else {
+        res.statusCode = 403;
+        res.json({
+          message: "No token provided",
+          code: 403
+        });
+      }
+    });
+  } else {
+    res.statusCode = 403;
+    res.json({
+      message: "No token provided.",
+      code: 403
+    });
   }
 });
 

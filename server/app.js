@@ -9,6 +9,8 @@ var bodyParser = require('body-parser');
 
 // *** Models *** //
 require('./models/user');
+require('./models/restaurant');
+
 
 // *** routes *** //
 var routes = require('./routes/index.js');
@@ -71,6 +73,8 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
+mongoose.connect('mongodb://localhost/scheduler');
 
 
 module.exports = app;
