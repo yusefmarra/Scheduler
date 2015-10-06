@@ -17,7 +17,19 @@ angular
       })
       .state('restaurant', {
         url: '/restaurant',
-        templateUrl: 'templates/restaurant.html'
+        templateUrl: 'templates/restaurant.html',
+        controller: 'restaurantCtrl',
+        resolve: {
+          restaurants: ['$http', function($http) {
+            return $http.get('/api/restaurants/').then(function(response) {
+              console.log(response);
+              return response.data;
+            }).error(function(err) {
+              console.log(err);
+              return err;
+            });
+          }]
+        }
       })
       .state('schedule', {
         url: '/schedule',
