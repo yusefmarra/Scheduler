@@ -24,7 +24,9 @@ router.post('/user/add', function(req, res) {
             message: "That username already exists",
             code: 400
           });
-        } else { throw err; }
+        } else {
+          throw err;
+        }
       }
     });
   } else {
@@ -40,7 +42,6 @@ router.post('/user/authenticate', function(req, res) {
   if (req.body.name && req.body.password) {
     User.findOne({name: req.body.name}, function(err, user) {
       if (err) {
-        console.log(err);
         res.statusCode = 400;
         res.json({message: "Authentication Failed. Some kinda error.", code: 400, err: err});
       }
@@ -100,6 +101,32 @@ router.use(function(req, res, next) {
     res.statusCode = 403;
     res.json({
       message: "No token provided.",
+      code: 403
+    });
+  }
+});
+
+router.post('/restaurant/add', function(req, res){
+  if (req.body.name){
+    new Restaurant(req.body).save(function(err, restaurant){
+      if (!err){
+        res.json({
+          message: "successfully added: " + restaurant.name ,
+          code: 200
+        });
+      } else {
+        res.statusCode = 403;
+        res.json({
+          message: "Error saving",
+          code: 403,
+          error: err
+        });
+      }
+    });
+  } else {
+    res.statusCode = 403;
+    res.json({
+      message: "No name provided.",
       code: 403
     });
   }
