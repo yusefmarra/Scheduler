@@ -176,7 +176,9 @@ router.get('/users', function(req, res){
   }
 });
 
-
+// router.put('user/edit', function(req, res){
+//   if(!req.body.name)
+// }
 
 
 
