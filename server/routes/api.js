@@ -43,13 +43,15 @@ router.post('/user/authenticate', function(req, res) {
     User.findOne({name: req.body.name}, function(err, user) {
       if (err) {
         res.statusCode = 400;
-        res.json({message: "Authentication Failed. Some kinda error.", code: 400, err: err});
+        res.json({message: "Authentication Failed. Some kinda error.",
+          code: 400,
+          err: err});
       }
       if (!user) {
         res.statusCode = 404;
-        res.json({message: "Authentication Failed. User not found", code:404});
+        res.json({message: "Authentication Failed. User not found",
+          code:404});
       } else {
-
         user.comparePassword(req.body.password, function(err, match) {
           if (!err) {
             if (match) {
@@ -134,20 +136,49 @@ router.post('/restaurant/add', function(req, res){
 
 router.get('/restaurants', function(req, res){
   if (!req.decoded.restaurantId) {
-    // res.json({
-    //   message: "",
-    //   code: 200
-    // });
+// fill later
   } else {
-    Restaurant.find({id: req.decoded.restaurantId}, function(err, restaurant) {
+    Restaurant.find({'_id': req.decoded.restaurantId}, function(err, restaurant) {
+      if (!err) {
       res.json({
         restaurant: restaurant,
         message: "Restaurant found.",
         code: 200
       });
+     } else {
+      res.json({
+        message: "No restaurant found.",
+        code: 404
+      });
+     }
     });
   }
 });
+
+router.get('/users', function(req, res){
+  if (!req.decoded.restaurantId) {
+//fill later
+  } else {
+    User.find({restaurantId: req.decoded.restaurantId}, function(err, users){
+      if (!err) {
+        res.json({
+          users: users,
+          message: "Users found.",
+          code: 200
+        });
+      } else {
+        res.json({
+          message: "No user found.",
+          code: 404
+        });
+      }
+    });
+  }
+});
+
+
+
+
 
 
 module.exports = router;
