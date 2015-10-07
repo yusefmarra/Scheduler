@@ -108,6 +108,8 @@ router.use(function(req, res, next) {
   }
 });
 
+//Restaurant endpoints
+
 router.post('/restaurant/add', function(req, res){
   if (req.body.name){
     new Restaurant(req.body).save(function(err, restaurant){
@@ -162,6 +164,8 @@ router.get('/restaurants', function(req, res){
   }
 });
 
+//User endpoints
+
 router.get('/users', function(req, res){
   if (!req.decoded.restaurantId) {
 //fill later
@@ -170,12 +174,12 @@ router.get('/users', function(req, res){
       if (!err) {
         res.json({
           users: users,
-          message: "Users found.",
+          message: "All users found.",
           code: 200
         });
       } else {
         res.json({
-          message: "No user found.",
+          message: "No users found.",
           code: 404
         });
       }
@@ -183,9 +187,23 @@ router.get('/users', function(req, res){
   }
 });
 
-// router.put('user/edit', function(req, res){
-//   if(!req.body.name)
-// }
+
+router.put('user/edit', function(req, res){
+  User.findOneAndUpdate({'_id': req.decoded.id}, {password: req.body.password, email: req.body.email, phone: req.body.phone}, function(err, user){
+    if (!err) {
+      res.json({
+        message: "Succesfully updated user information!",
+        code: 200
+      });
+    } else {
+      res.json({
+        message: "Oops, there was a problem updating your user information",
+        code: 418
+      });
+    }
+  });
+});
+
 
 
 
