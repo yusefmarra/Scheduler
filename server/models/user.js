@@ -12,7 +12,7 @@ var User = new Schema (
     password: { type:String, required:true },
     admin: { type:Boolean, required:false },
     roles: [String],
-    restaurantId: { type:String, index:{ unique:true } },
+    restaurantId: { type:String },
     phone: { type: Number, required:true },
     email: { type: String, required:true }
   }

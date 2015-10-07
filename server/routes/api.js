@@ -110,8 +110,14 @@ router.post('/restaurant/add', function(req, res){
   if (req.body.name){
     new Restaurant(req.body).save(function(err, restaurant){
       if (!err){
+        User.findOneAndUpdate({id: req.decoded.id}, {restaurantId: restaurant.id}, function(err, user) {
+          if (!err) {
+            console.log("hey good job buddy.");
+          }
+        });
         res.json({
-          message: "successfully added: " + restaurant.name ,
+          message: "successfully added: " + restaurant.name,
+          user: req.decoded.name,
           code: 200
         });
       } else {
@@ -133,6 +139,12 @@ router.post('/restaurant/add', function(req, res){
 });
 
 router.get('/restaurants', function(req, res) {
+  // if (!req.decoded.restaurantId) {
+  //   // Some logic here. Send to page to create restaurant.
+  // } else {
+  //
+  // }
+  console.log(req.decoded);
   res.json(req.decoded);
 });
 
