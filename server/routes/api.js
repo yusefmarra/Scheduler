@@ -146,7 +146,7 @@ router.get('/restaurants', function(req, res){
     //   code: 200
     // });
   } else {
-    Restaurant.find({id: req.decoded.restaurantId}, function(err, restaurant) {
+    Restaurant.find({'_id': req.decoded.restaurantId}, function(err, restaurant) {
       res.json({
         restaurant: restaurant,
         message: "Restaurant found.",
