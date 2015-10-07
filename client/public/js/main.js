@@ -29,7 +29,10 @@ angular
             });
           }]
         },
-        controller: 'restaurantCtrl'
+        // controller: 'restaurantCtrl'
+        controller: ['$scope', 'restaurants', function($scope, restaurants) {
+          $scope.restaurants = restaurants;
+        }]
       })
       .state('schedule', {
         url: '/schedule',
