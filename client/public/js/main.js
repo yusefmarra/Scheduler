@@ -2,7 +2,7 @@ angular
   .module('scheduler', [
     'ui.router'
   ])
-  .config(['$urlRouterProvider', '$stateProvider', function($urlRouterProvider, $stateProvider) {
+  .config(['$urlRouterProvider', '$stateProvider', '$httpProvider', function($urlRouterProvider, $stateProvider, $httpProvider) {
     $urlRouterProvider.otherwise('/');
 
     $stateProvider
@@ -19,7 +19,7 @@ angular
         url: '/restaurant',
         templateUrl: 'templates/restaurant.html',
         resolve: {
-          restaurants: ['$http', function($http) {
+          restaurants: ['$http', '$state', function($http, $state) {
             return $http.get('/api/restaurants/');
           }]
         },
@@ -34,4 +34,7 @@ angular
         templateUrl: 'templates/login.html',
         controller: 'loginCtrl'
       });
+
+    $httpProvider.interceptors.push('tokenInterceptor');
+
   }]);

@@ -1,15 +1,13 @@
-module.factory('tokenInterceptor', ['$state',function($state) {
-  var tokenInterceptor = {
-    responseError: function(response) {
-      if (response.code === 403) {
-        $state.go('login');
+angular
+  .module('scheduler')
+  .factory('tokenInterceptor', ['$q', '$injector', function ($q, $injector) {
+    return {
+      'responseError': function (rejection) {
+        if (rejection.status == "403") {
+          $injector.get('$state').go('login');
+        } else {
+          return $q.reject(rejection);
+        }
       }
-    },
-  };
-
-  return tokenInterceptor;
-}]);
-
-module.config(['$httpProvider', function($httpProvider) {
-  $httpProvider.interceptors.push('tokenInterceptor');
-}]);
+    };
+  }]);
