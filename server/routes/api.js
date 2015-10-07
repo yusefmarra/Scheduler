@@ -138,14 +138,23 @@ router.post('/restaurant/add', function(req, res){
   }
 });
 
-router.get('/restaurants', function(req, res) {
-  // if (!req.decoded.restaurantId) {
-  //   // Some logic here. Send to page to create restaurant.
-  // } else {
-  //
-  // }
-  console.log(req.decoded);
-  res.json(req.decoded);
+
+router.get('/restaurants', function(req, res){
+  if (!req.decoded.restaurantId) {
+    // res.json({
+    //   message: "",
+    //   code: 200
+    // });
+  } else {
+    Restaurant.find({id: req.decoded.restaurantId}, function(err, restaurant) {
+      res.json({
+        restaurant: restaurant,
+        message: "Restaurant found.",
+        code: 200
+      });
+    });
+  }
 });
+
 
 module.exports = router;
