@@ -133,7 +133,20 @@ router.post('/restaurant/add', function(req, res){
 });
 
 router.get('/restaurants', function(req, res){
-  res.json(req.decoded);
+  if (!req.decoded.restaurantId) {
+    // res.json({
+    //   message: "",
+    //   code: 200
+    // });
+  } else {
+    Restaurant.find({id: req.decoded.restaurantId}, function(err, restaurant) {
+      res.json({
+        restaurant: restaurant,
+        message: "Restaurant found.",
+        code: 200
+      });
+    });
+  }
 });
 
 
