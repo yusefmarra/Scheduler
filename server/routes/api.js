@@ -65,10 +65,10 @@ router.post('/user/authenticate', function(req, res) {
                 code: 200
               });
             } else {
-              res.statusCode = 403;
+              res.statusCode = 401;
               res.json({
                 message: "Authentication failed. Wrong password.",
-                code: 403
+                code: 401
               });
             }
           } else { throw err; }
@@ -92,18 +92,18 @@ router.use(function(req, res, next) {
         req.decoded = decoded;
         next();
       } else {
-        res.statusCode = 403;
+        res.statusCode = 401;
         res.json({
           message: "No token provided",
-          code: 403
+          code: 401
         });
       }
     });
   } else {
-    res.statusCode = 403;
+    res.statusCode = 401;
     res.json({
       message: "No token provided.",
-      code: 403
+      code: 401
     });
   }
 });
@@ -125,19 +125,19 @@ router.post('/restaurant/add', function(req, res){
           code: 200
         });
       } else {
-        res.statusCode = 403;
+        res.statusCode = 401;
         res.json({
           message: "Error saving",
-          code: 403,
+          code: 401,
           error: err
         });
       }
     });
   } else {
-    res.statusCode = 403;
+    res.statusCode = 401;
     res.json({
       message: "No name provided.",
-      code: 403
+      code: 401
     });
   }
 });
