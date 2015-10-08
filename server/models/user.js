@@ -10,11 +10,18 @@ var User = new Schema (
   {
     name: { type:String, required:true, index:{ unique:true } },
     password: { type:String, required:true },
-    admin: { type:Boolean, required:false },
+    admin: { type:Boolean },
+    phone: { type: Number },
+    email: { type: String },
     roles: [String],
-    restaurantId: { type:String },
-    phone: { type: Number, required:true },
-    email: { type: String, required:true }
+    restaurant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Restaurant'
+    },
+    schedules: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Schedule'
+    }]
   }
 );
 
@@ -23,9 +30,9 @@ var User = new Schema (
 User.pre('save', function(next) {
   var user = this;
 
-  // if (!user.isModified('password')) {
-  //   return next();
-  // }
+  if (!user.isModified('password')) {
+    return next();
+  }
 
   bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
     if (!err) {
