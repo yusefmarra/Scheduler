@@ -22,7 +22,7 @@ describe('User', function() {
         'name':'test',
         'password':'test123',
         'email':'test@test.com',
-        'phone':123456789
+        'phone':1234567890
       })
       .end(function(err, res) {
         res.should.have.status(200);
@@ -48,54 +48,46 @@ describe('User', function() {
   });
   it('"/api/user/edit" should allow you to set change your own user properties', function(done) {
     chai.request(server)
+      .set('x-access-token', token)
       .post('/api/user/edit')
       .send({
         'email': 'new@email.com',
-        'phone': 9876543210
+        'phone': 9876543210,
+        'password': 'blah123'
       })
       .end(function(err, res) {
         res.should.have.status(200);
         res.should.be.json;
+        user = User.find({'name':'test'});
+        console.log(user);
+        done();
       });
   });
   it('"/api/user/edit" should not allow you to change the admin status of a user if you are not already an admin', function(done) {
-
+    done();
   });
 });
 
-describe('Restaurant', function() {
-  it('"/api/restaurant/add" should return 401 if no valid token is given to it', function(done) {
-    chai.request(server)
-      .post('/api/restaurant/add')
-      .send({
-        'name': 'Test Rest'
-      })
-      .end(function(err, res) {
-        res.should.have.status(401);
-        res.should.be.json;
-        done();
-      });
-  });
-  it('"/api/restaurant/add" should take a restaurant name and create a new restaurant', function(done) {
-    chai.request(server)
-      .post('/api/restaurant/add')
-      .send({
-        'name': 'Test Rest',
-        'token': token
-      })
-      .end(function(err, res) {
-        res.should.have.status(200);
-        res.should.be.json;
-        done();
-      });
-  });
-  it('should associate the user that created the restaurant with said restaurant', function(done) {
-
-  });
-  it('should return Restaurant associated with user info taken from the token', function(done) {
-
-  });
-});
+// describe('Restaurant', function() {
+//   it('"/api/restaurant/" should return 401 if no valid token is given to it', function(done) {
+//     chai.request(server)
+//       .get('/api/restaurant/')
+//       .end(function(err, res) {
+//         res.should.have.status(401);
+//         res.should.be.json;
+//         done();
+//       });
+//   });
+//   it('should return Restaurant associated with user info taken from the token', function(done) {
+//     chai.request(server)
+//       .set('x-access-token', token)
+//       .get('/api/restaurant')
+//       .end(function(err, res) {
+//         res.should.have.status(200);
+//         done();
+//       });
+//   });
+// });
 
 
 User.collection.drop();
