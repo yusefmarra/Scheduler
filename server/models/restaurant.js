@@ -7,4 +7,4 @@ var Restaurant = new Schema (
   }
 );
 
-mongoose.model('restaurants', Restaurant);
+module.exports = mongoose.model('restaurants', Restaurant);

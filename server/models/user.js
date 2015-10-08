@@ -49,4 +49,4 @@ User.methods.comparePassword = function(inputPassword, cb) {
 };
 
 
-mongoose.model('users', User);
+module.exports = mongoose.model('users', User);
