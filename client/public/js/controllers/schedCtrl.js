@@ -1,5 +1,5 @@
 angular
   .module('scheduler')
-  .controller('schedCtrl', ['$scope', function($scope) {
-
+  .controller('schedCtrl', ['$scope', 'schedules', function($scope, schedules) {
+    $scope.schedules = schedules.data;
   }]);
