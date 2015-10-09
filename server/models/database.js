@@ -21,8 +21,8 @@ new Restaurant({'name': restName}).save(function(err, restaurant) {
       'admin': true,
       'restaurant': restaurant._id
     }).save(function(err, user) {
-      User.find({})
-        .populate('restaurantId')
+      User.findById(user._id)
+        .populate('restaurant')
         .exec(function(error, users) {
           console.log(JSON.stringify(users, null, "\t"));
         });

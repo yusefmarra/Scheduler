@@ -7,40 +7,9 @@ var Restaurant = mongoose.model('restaurants');
 require('dotenv').load();
 
 
-
-router.post('/user/add', function(req, res) {
-  if (req.body.name && req.body.password && req.body.email && req.body.phone) {
-    new User(req.body).save(function(err, user) {
-      if (!err) {
-        res.statusCode = 200;
-        res.json({
-          message: "User successfully created.",
-          code: 200,
-        });
-      } else {
-        if (err.code === 11000) {
-          res.statusCode = 400;
-          res.json({
-            message: "That username already exists",
-            code: 400
-          });
-        } else {
-          throw err;
-        }
-      }
-    });
-  } else {
-    res.statusCode = 400;
-    res.json({
-      message: "Must provide all fields",
-      code: 400
-    });
-  }
-});
-
 router.post('/user/authenticate', function(req, res) {
-  if (req.body.name && req.body.password) {
-    User.findOne({name: req.body.name}, function(err, user) {
+  if (req.body.email && req.body.password) {
+    User.findOne({email: req.body.email}, function(err, user) {
       if (err) {
         res.statusCode = 400;
         res.json({message: "Authentication Failed. Some kinda error.",
@@ -82,8 +51,6 @@ router.post('/user/authenticate', function(req, res) {
 });
 
 
-// **** EVERYTHING AFTER THIS POINT REQUIRES A TOKEN *** //
-
 router.use(function(req, res, next) {
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
@@ -108,46 +75,67 @@ router.use(function(req, res, next) {
   }
 });
 
-//Restaurant endpoints
+// **** EVERYTHING AFTER THIS POINT REQUIRES A TOKEN *** //
 
-router.post('/restaurant/add', function(req, res){
-  if (req.body.name){
-    new Restaurant(req.body).save(function(err, restaurant){
-      if (!err){
-        User.findOneAndUpdate({id: req.decoded.id}, {restaurantId: restaurant.id}, function(err, user) {
-          if (!err) {
-            console.log("hey good job buddy.");
+router.post('/user/add', function(req, res) {
+  if (req.decoded.admin === true) {
+    if (req.body.name && req.body.password && req.body.email && req.body.phone && req.body.roles) {
+      var payload = {
+        'name': req.body.name,
+        'password': req.body.password,
+        'email': req.body.email,
+        'phone': req.body.phone,
+        'restaurant': req.decoded.restaurant
+      };
+      new User(payload).save(function(err, user) {
+        if (!err) {
+          User.findById(user._id)
+            .populate('restaurant')
+            .exec(function(error, newUser) {
+              res.statusCode = 200;
+              res.json({
+                user: newUser,
+                message: "User successfully created.",
+                code: 200,
+              });
+            });
+        } else {
+          if (err.code === 11000) {
+            res.statusCode = 400;
+            res.json({
+              message: "That username already exists",
+              code: 400
+            });
+          } else {
+            throw err;
           }
-        });
-        res.json({
-          message: "successfully added: " + restaurant.name,
-          user: req.decoded.name,
-          code: 200
-        });
-      } else {
-        res.statusCode = 401;
-        res.json({
-          message: "Error saving",
-          code: 401,
-          error: err
-        });
-      }
-    });
+        }
+      });
+    } else {
+      res.statusCode = 400;
+      res.json({
+        message: "Must provide all fields",
+        code: 400
+      });
+    }
   } else {
-    res.statusCode = 401;
+    res.statusCode = 403;
     res.json({
-      message: "No name provided.",
-      code: 401
+      message: "Must be admin to create new users",
+      code:401
     });
   }
 });
 
 
+//Restaurant endpoints
+
+
 router.get('/restaurants', function(req, res){
-  if (!req.decoded.restaurantId) {
-// fill later
+  if (!req.decoded.restaurant) {
+    // If you hit this you have problems, and you should probably fire your dev team
   } else {
-    Restaurant.find({'_id': req.decoded.restaurantId}, function(err, restaurant) {
+    Restaurant.findById(req.decoded.restaurant, function(err, restaurant) {
       if (!err) {
       res.json({
         restaurant: restaurant,
@@ -167,10 +155,10 @@ router.get('/restaurants', function(req, res){
 //User endpoints
 
 router.get('/users', function(req, res){
-  if (!req.decoded.restaurantId) {
-//fill later
+  if (!req.decoded.restaurant) {
+    // If you hit this you have problems, and you should probably fire your dev team
   } else {
-    User.find({restaurantId: req.decoded.restaurantId}, function(err, users){
+    User.find({restaurant: req.decoded.restaurant}, function(err, users){
       if (!err) {
         res.json({
           users: users,
@@ -189,22 +177,73 @@ router.get('/users', function(req, res){
 
 
 router.put('user/edit', function(req, res){
-  User.findOneAndUpdate({'_id': req.decoded.id}, {password: req.body.password, email: req.body.email, phone: req.body.phone}, function(err, user){
-    if (!err) {
-      res.json({
-        message: "Succesfully updated user information!",
-        code: 200
-      });
-    } else {
-      res.json({
-        message: "Oops, there was a problem updating your user information",
-        code: 418
-      });
-    }
+  User.findOneAndUpdate({'_id': req.decoded.id},
+    {
+      email: req.body.email,
+      phone: req.body.phone,
+      roles: req.body.roles
+    },
+    function(err, user){
+      if (!err) {
+        res.statusCode = 200;
+        res.json({
+          user: user,
+          message: "Succesfully updated user information!",
+          code: 200
+        });
+      } else {
+        res.statusCode = 418;
+        res.json({
+          message: "Oops, there was a problem updating your user information, user was turned into a teapot.",
+          code: 418
+        });
+      }
   });
 });
 
-
+router.put('/user/edit/:id', function(req, res) {
+  if (req.decoded.admin === true) {
+    User.findById(req.params.id, function(err, user) {
+      if (user.restaurant === req.decoded.restaurant) {
+        if (req.body.email && req.body.name && req.body.phone && req.body.roles && req.body.admin) {
+          user.email = req.body.email;
+          user.name = req.body.name;
+          user.phone = req.body.phone;
+          user.roles = req.body.roles;
+          user.admin = req.body.admin;
+          user.save(function(err, user) {
+            if (!err) {
+              res.statusCode = 200;
+              res.json({
+                user: user,
+                message: "User successfully edited",
+                code: 200
+              });
+            }
+          });
+        } else {
+          res.statusCode = 400;
+          res.json({
+            message: "You must provide all fields",
+            code: 400
+          });
+        }
+      } else {
+        res.statusCode = 403;
+        res.json({
+          message: "You must belong to the same restaurant to edit other users",
+          code: 403
+        });
+      }
+    });
+  } else {
+    res.statusCode = 403;
+    res.json({
+      message: "You must be an admin to edit other users.",
+      code: 403
+    });
+  }
+});
 
 
 
