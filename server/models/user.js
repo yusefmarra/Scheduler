@@ -8,11 +8,11 @@ SALT_WORK_FACTOR = 10;
 
 var User = new Schema (
   {
-    name: { type:String, required:true, index:{ unique:true } },
+    name: { type:String, required:true },
     password: { type:String, required:true },
-    admin: { type:Boolean },
+    email: { type: String, required:true, index:{ unique:true } },
+    admin: { type: Boolean },
     phone: { type: Number },
-    email: { type: String },
     roles: [String],
     restaurant: {
       type: mongoose.Schema.Types.ObjectId,

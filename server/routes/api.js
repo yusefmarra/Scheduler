@@ -8,6 +8,7 @@ require('dotenv').load();
 
 
 router.post('/user/authenticate', function(req, res) {
+  console.log(req.body);
   if (req.body.email && req.body.password) {
     User.findOne({email: req.body.email}, function(err, user) {
       if (err) {
@@ -18,8 +19,10 @@ router.post('/user/authenticate', function(req, res) {
       }
       if (!user) {
         res.statusCode = 404;
-        res.json({message: "Authentication Failed. User not found",
-          code:404});
+        res.json({
+          message: "Authentication Failed. User not found",
+          code:404
+        });
       } else {
         user.comparePassword(req.body.password, function(err, match) {
           if (!err) {
@@ -85,12 +88,13 @@ router.post('/user/add', function(req, res) {
         'password': req.body.password,
         'email': req.body.email,
         'phone': req.body.phone,
-        'restaurant': req.decoded.restaurant
+        'restaurant': req.decoded.restaurant,
+        'roles': req.body.roles
       };
       new User(payload).save(function(err, user) {
         if (!err) {
           User.findById(user._id)
-            .populate('restaurant')
+            .populate('restaurants')
             .exec(function(error, newUser) {
               res.statusCode = 200;
               res.json({
@@ -103,7 +107,7 @@ router.post('/user/add', function(req, res) {
           if (err.code === 11000) {
             res.statusCode = 400;
             res.json({
-              message: "That username already exists",
+              message: "That email already exists",
               code: 400
             });
           } else {
@@ -177,34 +181,43 @@ router.get('/users', function(req, res){
 
 
 router.put('user/edit', function(req, res){
-  User.findOneAndUpdate({'_id': req.decoded.id},
-    {
-      email: req.body.email,
-      phone: req.body.phone,
-      roles: req.body.roles
-    },
-    function(err, user){
-      if (!err) {
-        res.statusCode = 200;
-        res.json({
-          user: user,
-          message: "Succesfully updated user information!",
-          code: 200
-        });
-      } else {
-        res.statusCode = 418;
-        res.json({
-          message: "Oops, there was a problem updating your user information, user was turned into a teapot.",
-          code: 418
-        });
-      }
-  });
+  if (req.body.email && req.body.phone && req.body.roles) {
+    User.findOneAndUpdate({'_id': req.decoded.id},
+      {
+        email: req.body.email,
+        phone: req.body.phone,
+        roles: req.body.roles,
+
+      },
+      function(err, user){
+        if (!err) {
+          res.statusCode = 200;
+          res.json({
+            user: user,
+            message: "Succesfully updated user information!",
+            code: 200
+          });
+        } else {
+          res.statusCode = 418;
+          res.json({
+            message: "Oops, there was a problem updating your user information, user was turned into a teapot.",
+            code: 418
+          });
+        }
+    });
+  } else {
+    res.statusCode = 400;
+    res.json({
+      message: "You must provide all fields",
+      code: 400
+    });
+  }
 });
 
 router.put('/user/edit/:id', function(req, res) {
   if (req.decoded.admin === true) {
     User.findById(req.params.id, function(err, user) {
-      if (user.restaurant === req.decoded.restaurant) {
+      if (user.restaurant == req.decoded.restaurant) {
         if (req.body.email && req.body.name && req.body.phone && req.body.roles && req.body.admin) {
           user.email = req.body.email;
           user.name = req.body.name;

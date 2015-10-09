@@ -5,7 +5,11 @@ var Schedule = new Schema (
   {
     date: {type: Date, required:true},
     timeStart: {type: String, required:true},
-    timeDone: {type: String, required:true}
+    timeFinish: {type: String, required:true},
+    restaurant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Restaurant'
+    }
   }
 );
 
