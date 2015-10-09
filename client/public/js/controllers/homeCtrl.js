@@ -1,5 +1,5 @@
 angular
   .module('scheduler')
-  .controller('homeCtrl', ['$scope', function($scope) {
-    $scope.test = "WTF";
+  .controller('homeCtrl', ['$scope', 'home', function($scope) {
+    $scope.home = home.data;
   }]);

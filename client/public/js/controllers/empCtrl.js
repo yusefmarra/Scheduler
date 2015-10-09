@@ -1,5 +1,6 @@
 angular
   .module('scheduler')
-  .controller('empCtrl', ['$scope', function($scope) {
-
-  }]);
+  .controller('empCtrl', ['$scope', 'employees',
+    function($scope, employees) {
+      $scope.employees = employees.data;
+    }]);
