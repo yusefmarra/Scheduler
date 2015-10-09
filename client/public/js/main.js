@@ -13,7 +13,13 @@ angular
       })
       .state('employees', {
         url: '/employees',
-        templateUrl: 'templates/employees.html'
+        templateUrl: 'templates/employees.html',
+        resolve: {
+          employees: ['$http', '$state', function($http, $state) {
+            return $http.get('/api/employees/');
+          }]
+        },
+        controller:'empCtrl'
       })
       .state('restaurant', {
         url: '/restaurant',
@@ -27,7 +33,13 @@ angular
       })
       .state('schedule', {
         url: '/schedule',
-        templateUrl: 'templates/schedule.html'
+        templateUrl: 'templates/schedule.html',
+        resolve: {
+          schedules: ['$http', '$state', function($http, $state) {
+            return $http.get('/api/schedules/');
+          }]
+        },
+        controller: 'schedCtrl'
       })
       .state('login', {
         url:'/login',
