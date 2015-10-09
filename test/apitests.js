@@ -13,36 +13,61 @@ var should = chai.should();
 chai.use(chaiHttp);
 
 var token;
+var adminToken;
+var restaurant, employee, manager;
+
+new Restaurant({'name': 'Testaurant'}).save(function(err, rest) {
+  if (!err) {
+    console.log(rest);
+    restaurant = rest;
+    new User({
+      'name': 'admin',
+      'email': 'test@test.com',
+      'password': 'test123',
+      'admin': true,
+      'restaurant': rest._id
+    }).save(function(err, user) {
+      User.findById(user._id)
+        .populate('restaurant')
+        .exec(function(error, users) {
+          manager = users;
+          console.log(manager);
+        });
+    });
+  }
+});
 
 describe('User', function() {
-  it('"/api/user/add" should take name, password, email, and phone and create a new user', function(done){
-    chai.request(server)
-      .post('/api/user/add')
-      .send({
-        'name':'test',
-        'password':'test123',
-        'email':'test@test.com',
-        'phone':1234567890
-      })
-      .end(function(err, res) {
-        res.should.have.status(200);
-        res.should.be.json;
-        res.body.message.should.equal('User successfully created.');
-        done();
-      });
-  });
   it('"/api/user/authenticate" should take name and password and return a token', function(done) {
     chai.request(server)
       .post('/api/user/authenticate')
       .send({
-        'name':'test',
+        'email':'test@test.com',
         'password':'test123'
       })
       .end(function(err, res) {
         res.should.have.status(200);
         res.should.be.json;
         res.body.should.have.property('token');
-        token = res.body.token;
+        adminToken = res.body.token;
+        done();
+      });
+  });
+  it('"/api/user/add" should take name, password, email, roles, and phone and create a new user', function(done){
+    chai.request(server)
+      .post('/api/user/add')
+      .send({
+        'name':'test',
+        'password':'test123',
+        'email':'employee@test.com',
+        'phone':1234567890,
+        'roles':['bartender', 'server']
+      })
+      .end(function(err, res) {
+        res.should.have.status(200);
+        res.should.be.json;
+        res.body.message.should.equal('User successfully created.');
+        res.body.user.should.have.property('restaurant');
         done();
       });
   });
