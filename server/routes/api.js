@@ -258,6 +258,13 @@ router.put('/user/edit/:id', function(req, res) {
   }
 });
 
+router.get('/schedules', function(req, res) {
+  
+});
+
+router.post('/schedule/add', function(req, res) {
+
+});
 
 
 module.exports = router;

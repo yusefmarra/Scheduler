@@ -16,7 +16,7 @@ angular
         templateUrl: 'templates/employees.html',
         resolve: {
           employees: ['$http', '$state', function($http, $state) {
-            return $http.get('/api/employees/');
+            return $http.get('/api/users/');
           }]
         },
         controller:'empCtrl'
