@@ -3,7 +3,8 @@ var Schema = mongoose.Schema;
 
 var Restaurant = new Schema (
   {
-    name: {type: String, required:true}
+    name: { type: String, required:true },
+    logoUrl: { type: String }
   }
 );
 

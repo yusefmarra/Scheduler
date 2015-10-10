@@ -17,11 +17,7 @@ var User = new Schema (
     restaurant: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Restaurant'
-    },
-    schedules: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Schedule'
-    }]
+    }
   }
 );
 

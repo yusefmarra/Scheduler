@@ -4,6 +4,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var User = mongoose.model('users');
 var Restaurant = mongoose.model('restaurants');
+var Schedule = mongoose.model('schedules');
 require('dotenv').load();
 
 
@@ -259,11 +260,71 @@ router.put('/user/edit/:id', function(req, res) {
 });
 
 router.get('/schedules', function(req, res) {
-  
+  console.log(User.findById(req.decoded._id).schedules);
+  Schedule.find({'user':req.decoded._id}, function(err, schedules) {
+      if (!err) {
+        res.statusCode=200;
+        res.json({
+          message: "Found Schedules.",
+          schedules: schedules
+        });
+      } else {
+        res.statusCode=400;
+        res.json({
+          message: "Some fucking error.",
+          error: err
+        });
+      }
+  });
 });
 
 router.post('/schedule/add', function(req, res) {
-
+  console.log(req.body);
+  if (req.decoded.admin === true) {
+    new Schedule({
+      'date': req.body.date,
+      'timeStart': req.body.timeStart,
+      'timeFinish': req.body.timeFinish,
+      'restaurant': req.decoded.restaurant,
+      'user': req.body.user
+    }).save(function(err, schedule) {
+      if (!err) {
+        Schedule.findById(schedule._id)
+        .populate('users')
+        .populate('restaurants')
+        .exec(function(error) {
+          if (!error) {
+            res.statusCode = 200;
+            res.json({
+              schedule: schedule,
+              message: "Schedule successfully created.",
+              code: 200,
+            });
+          } else {
+            res.statusCode = 400;
+            res.json({
+              message: "Error on exec.",
+              error: error,
+              code: 400
+            });
+          }
+        });
+      } else {
+        res.statusCode = 400;
+        res.json({
+          message: "Some fucking error on save.",
+          error: err,
+          code: 400
+        });
+      }
+    });
+  } else {
+    res.statusCode = 403;
+    res.json({
+      message: "Must be an admin to create a schedule",
+      code: 403
+    });
+  }
 });
 
 

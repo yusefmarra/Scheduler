@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 // *** Models *** //
 require('./models/user');
 require('./models/restaurant');
+require('./models/schedule');
 
 
 // *** routes *** //
