@@ -260,7 +260,6 @@ router.put('/user/edit/:id', function(req, res) {
 });
 
 router.get('/schedules', function(req, res) {
-  console.log(User.findById(req.decoded._id).schedules);
   Schedule.find({'user':req.decoded._id}, function(err, schedules) {
       if (!err) {
         res.statusCode=200;
@@ -275,6 +274,26 @@ router.get('/schedules', function(req, res) {
           error: err
         });
       }
+  });
+});
+
+router.get('/schedules/all', function(req,res) {
+  Schedule.find({'restaurant': req.decoded.restaurant}, function(err, schedules) {
+    if (!err) {
+      res.statusCode = 200;
+      res.json({
+        message: "Schedules found.",
+        code: 200,
+        schedules: schedules
+      });
+    } else {
+      res.statusCode = 400;
+      res.json({
+        message: "There was an error getting your schedules.",
+        code: 400,
+        error: err
+      });
+    }
   });
 });
 
