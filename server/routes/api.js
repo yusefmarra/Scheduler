@@ -259,6 +259,42 @@ router.put('/user/edit/:id', function(req, res) {
   }
 });
 
+router.delete('/user/delete/:id', function(req, res) {
+  if (req.decoded.admin === true) {
+    User.findById(req.params.id, function(err, user) {
+      if(!err) {
+        if (user.restaurant == req.decoded.restaurant) {
+          user.remove();
+          res.statusCode = 200;
+          res.json({
+            message: "User successfully deleted.",
+            code: 200,
+            user: user
+          });
+        } else {
+          res.statusCode = 403;
+          res.json({
+            message: "You must be an admin of the same restaurant to delete other users.",
+            code: 403
+          });
+        }
+      } else {
+        res.statusCode = 400;
+        res.json({
+          message: "User not found.",
+          code: 400
+        });
+      }
+    });
+  } else {
+    res.statusCode = 403;
+    res.json({
+      message: "You must be an admin to delete other users.",
+      code: 403
+    });
+  }
+});
+
 router.get('/schedules', function(req, res) {
   Schedule.find({'user':req.decoded._id}, function(err, schedules) {
       if (!err) {
@@ -346,5 +382,64 @@ router.post('/schedule/add', function(req, res) {
   }
 });
 
+router.delete('/schedule/:id', function(req, res) {
+  if (req.decoded.admin === true) {
+    Schedule.findById(req.params.id, function(err, schedule) {
+      if (!err) {
+        if (schedule.restaurant == req.decoded.restaurant){
+          schedule.remove();
+          res.statusCode = 200;
+          res.json({
+            message: "Schedule successfully deleted.",
+            schedule: schedule,
+            code: 200
+          });
+        } else {
+          res.statusCode = 403;
+          res.json({
+            message: "You must an admin for the same restaurant to delete a schedule",
+            code: 403
+          });
+        }
+      } else {
+        res.statusCode = 400;
+        res.json({
+          message: "Some error happened. It's probably your fault.",
+          code: 400
+        });
+      }
+    });
+  } else {
+    res.statusCode = 403;
+    res.json({
+      message: "You must be an admin to delete schedules",
+      code: 403
+    });
+  }
+});
+
+router.put('/schedule/edit/:id', function(req, res) {
+  if (req.decoded.admin === true) {
+    Schedule.findById(req.params.id, function(err, schedule) {
+      if (!err) {
+        if (schedule.restaurant == req.decoded.restaurant) {
+
+        } else {
+          res.statusCode = 403;
+          res.json({
+            message: "You must an admin for the same restaurant to delete a schedule",
+            code: 403
+          });
+        }
+      }
+    });
+  } else {
+    res.statusCode = 403;
+    res.json({
+      message: "You must be an admin to edit schedules",
+      code: 403
+    });
+  }
+});
 
 module.exports = router;
