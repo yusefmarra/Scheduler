@@ -4,7 +4,7 @@ var User = require('./user.js');
 var Restaurant = require('./restaurant.js');
 var Schedule = require('./schedule.js');
 
-mongoose.connect('mongodb://localhost/scheduler-test');
+mongoose.connect('mongodb://localhost/scheduler');
 
 var restName = 'Testaurant';
 var userName = 'admin';
