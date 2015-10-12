@@ -1,6 +1,25 @@
 body {
+  background-image: url("/images/kitchen-doors.jpg");
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-family: 'Noto Sans', sans-serif;
+}
+
+h1 {
+  font-weight: 700;
+  color: white;
+}
+
+h3 {
+  color: white;
+}
+
+#white {
+  color: white;
+}
+
+footer {
+  border-color: white;
+  color: white;
 }
 
 a {
