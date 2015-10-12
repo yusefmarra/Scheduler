@@ -322,7 +322,7 @@ router.post('/schedule/add', function(req, res) {
           } else {
             res.statusCode = 400;
             res.json({
-              message: "Error on exec.",
+              message: "Error populating schema.",
               error: error,
               code: 400
             });

@@ -6,9 +6,7 @@ var server = require('../server/app');
 
 var User = require('../server/models/user.js');
 var Restaurant = require('../server/models/restaurant.js');
-
-Restaurant.collection.drop();
-User.collection.drop();
+var Schedule = require('../server/models/schedule.js');
 
 var should = chai.should();
 
@@ -17,63 +15,36 @@ chai.use(chaiHttp);
 var token;
 var adminToken;
 
+var restaurant = new Restaurant({'name': restName});
+
+restaurant.save(function(err, restaurant) {
+  console.log(restaurant);
+});
+
+var employee = new User({
+  name: 'admin',
+  password: 'test123',
+  email: 'test@test.com',
+  admin: true,
+  phone: 9876543210,
+  roles: ['Manager'],
+  restaurant: restaurant._id
+});
+
+employee.save(function(err, user) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log(user);
+    User.find({}, function(err, users) {
+      console.log(users);
+    });
+  }
+});
+
+
+
 describe('User', function() {
-
-  beforeEach(function(done){
-    var restaurant = new Restaurant({
-      name: 'Testaurant'
-    });
-    restaurant.save(function(err) {
-      console.log('Made restaurant');
-    });
-
-    var employee = new User({
-      name: 'admin',
-      password: 'test123',
-      email: 'test@test.com',
-      admin: true,
-      phone: 9876543210,
-      roles: ['Manager'],
-      restaurant: restaurant._id
-    });
-
-    employee.save(function(err, user) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(user);
-      }
-    });
-
-    done();
-
-    // employee
-    //   .populate('restaurants')
-    //   .exec(function(error, users) {
-    //     console.log('Gibber Jabber');
-    //   });
-
-    // chai.request(server)
-    //   .post('/api/user/authenticate')
-    //   .send({
-    //     'email':'test@test.com',
-    //     'password':'test123'
-    //   })
-    //   .end(function(err, res) {
-    //     adminToken = res.body.token;
-    //     done();
-    //   });
-
-  });
-
-  afterEach(function(done){
-    Restaurant.collection.drop();
-    User.collection.drop();
-    done();
-  });
-
-
-
   it('"/api/user/authenticate" should take name and password and return a token', function(done) {
     chai.request(server)
       .post('/api/user/authenticate')
@@ -83,7 +54,6 @@ describe('User', function() {
       })
       .end(function(err, res) {
         res.should.have.status(200);
-        res.should.be.json;
         res.body.should.have.property('token');
         adminToken = res.body.token;
         done();
@@ -102,7 +72,6 @@ describe('User', function() {
       })
       .end(function(err, res) {
         res.should.have.status(200);
-        res.should.be.json;
         res.body.message.should.equal('User successfully created.');
         res.body.user.should.have.property('restaurant');
         res.body.user.restaurant.should.equal(restaurant._id);
@@ -120,7 +89,6 @@ describe('User', function() {
       })
       .end(function(err, res) {
         res.should.have.status(200);
-        res.should.be.json;
         done();
       });
   });
@@ -135,7 +103,6 @@ describe('User', function() {
 //       .get('/api/restaurant/')
 //       .end(function(err, res) {
 //         res.should.have.status(401);
-//         res.should.be.json;
 //         done();
 //       });
 //   });
