@@ -1,1 +1,23 @@
-<div>{{ employees }}</div>
+<div class="container">
+    <div class="row col-md-6 col-md-offset-2 custyle">
+    <table class="table table custab">
+    <thead>
+        <tr>
+            <th>employee</th>
+            <th>role</th>
+            <th>phone</th>
+            <th>e-mail</th>
+            <th class="text-center">Action</th>
+        </tr>
+    </thead>
+            <tr ng-repeat="employee in employees">
+
+                <td>{{ employee.name }}</td>
+                <td>{{ employee.roles }}</td>
+                <td>{{ employee.phone }}</td>
+                <td>{{ employee.email }}</td>
+                <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+            </tr>
+    </table>
+    </div>
+</div>
